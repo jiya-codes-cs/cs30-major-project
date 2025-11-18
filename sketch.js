@@ -1,6 +1,6 @@
-// Project Title
-// Your Name
-// Date
+// CS 30 Major Project
+// Jiya Khalsa Bangar
+// 17 November,Tuesday
 //
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
