@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Sketch</title>
+    <title>CS 30 Major Project</title>
 
     <link rel="stylesheet" type="text/css" href="style.css">
 
@@ -23,6 +23,16 @@
   </head>
 
   <body>
-    <script src="sketch.js"></script>
+    <h1>Hand Gesture Interface</h1>
+    <video src=""></video>
+    <!-- <Shows the webcam feed> -->
+    <video id="webcam" autoplay playsinline width="640" height="480"></video>
+    <!-- <This is where we can draw shapes> -->
+    <canvas id="canvas" width="640" height="480"></canvas>
+
+    <!-- <Linked MediaPipe libraries for hand-tracking> -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+
   </body>
 </html>
