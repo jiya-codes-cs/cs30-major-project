@@ -5,12 +5,13 @@
 
 ## Needs to have list
 - Webcam for virtual interaction from user
-- Create a circle on the left side of the screen so it's easier for them to see what they are manipulating.
-- Then divide it into 26 equal parts and display the letters now.
+- Create a circle on the left side of the screen so it's easier for them to see what they are manipulating
+- Then divide it into 26 equal parts and display the letters now
 - Generate letter chosen inside the circle
 - Hand-tracking so they can perform actions (like with index + thumb they can move around the circle)
 - Allot hand gestures for certain things
 - Use MediaScript as a hand-tracking Library
+- Add rotating sound effects when the user rotates on the letter arc
 
 ## Nice to have lists
 - Add a feature so when the user pinches their (index + thumb) it would lock the letter 
