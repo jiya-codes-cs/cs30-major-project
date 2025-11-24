@@ -5,7 +5,8 @@
 
 // Sources:
 // https://mediapipe.readthedocs.io/en/latest/solutions/hands.html
-//https://www.w3schools.com/graphics/canvas_drawing.asp
+// https://www.w3schools.com/graphics/canvas_drawing.asp
+// https://www.youtube.com/watch?v=vfNHdVbE-l4
 
 
 // Extra for Experts:
