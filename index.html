@@ -29,11 +29,19 @@
 
   <body>
     <h1>Hand Gesture Interface</h1>
-    <video src=""></video>
-    <!-- <Shows the webcam feed> -->
-    <video id="webcam" autoplay playsinline width="640" height="480"></video>
-    <!-- <This is where we can draw shapes> -->
-    <canvas id="canvas" width="640" height="480"></canvas>
+    <!-- <Looked up the part for permissions (where it asks if it can turn on my camera)> -->
+    <video id="webcamFeed" autoplay playsinline></video>
+<script>
+  const videoElement = document.getElementById("webcamFeed");
+  navigator.mediaDevices
+    .getUserMedia({ video: true })
+    .then((stream) => {
+      videoElement.srcObject = stream;
+    })
+    .catch((err) => {
+      console.error("Error accessing webcam: ", err);
+    });
+</script>
 
     
   </body>
