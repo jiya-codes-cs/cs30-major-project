@@ -76,8 +76,8 @@ class LetterManager {
       const x = centerX + Math.cos(angle) * this.circleRadius;
       const y = centerY + Math.sin(angle) * this.circleRadius;
 
-      ctx.font = "bold 24px Courier New";
-      ctx.fillStyle = "white";
+      ctx.font = "bold 26px Courier New";
+      ctx.fillStyle = "red";
       ctx.fillText(this.letters[i], x, y);
     }
   }
@@ -86,7 +86,7 @@ class LetterManager {
 class App {
   constructor() {
     // creates a static circle on the left side of the canvas for display
-    const padding = 165; // space from the right edge
+    const padding = 215; // space from the right edge
     this.centerX = canvasWidth - padding;
     this.centerY = canvasHeight / 2;
     this.LetterManager = new LetterManager();

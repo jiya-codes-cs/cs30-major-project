@@ -22,8 +22,8 @@ canvas {
 }
 
 #webcam {
-  width: 700px;
-  height: 525px;
+  width: 1000px;
+  height: 750px;
   border: 2px solid black;
   display: block;
 }
