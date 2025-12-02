@@ -11,7 +11,27 @@ body {
 }
 
 canvas {
-  border: 2 px solid black;
-  margin-top: 10 px;
+  border: 2px solid black;
+  margin-top: 10px;
 
+}
+
+#viewArea {
+  position: relative;
+  display: inline-block;
+}
+
+#webcam {
+  width: 700px;
+  height: 525px;
+  border: 2px solid black;
+  display: block;
+}
+
+#canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 2px solid transparent;
+  /* pointer-events: none; */
 }
