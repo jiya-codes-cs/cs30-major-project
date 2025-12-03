@@ -69,7 +69,6 @@ class LetterManager {
     }
 
     let angleStep = Math.PI * 2 / total;
-    let i = 0;
 
     for (let i = 0; i < total; i++) {
       const angle = i * angleStep - Math.PI / 2;
@@ -77,7 +76,8 @@ class LetterManager {
       const y = centerY + Math.sin(angle) * this.circleRadius;
 
       ctx.font = "bold 26px Courier New";
-      ctx.fillStyle = "red";
+      // Because we are presenting with the lights turned off I chose white
+      ctx.fillStyle = "white";
       ctx.fillText(this.letters[i], x, y);
     }
   }
