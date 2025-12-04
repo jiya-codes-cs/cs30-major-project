@@ -97,6 +97,7 @@ class App {
   }
 
   drawEverything() {
+    //clears the canvas before drawing everything
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     this.LetterManager.drawLetters(this.centerX, this.centerY);
   }
@@ -105,7 +106,7 @@ class App {
 // calling the app instance
 let app = new App();
 
-
+//added the letters to be covering the circle
 app.setLetters([
   "A","B","C","D","E","F","G",
   "H","I","J","K","L","M","N",
@@ -113,12 +114,13 @@ app.setLetters([
   "V","W","X","Y","Z"
 ]);
 
-
-// this is a function that runs just before the screen so that it helps before redrawing the screen which allows a smoother transition  
 function update() {
   app.drawEverything();
+  // this is a function that runs just before the screen so that it helps before redrawing the screen which allows a smoother transition (meaning minimum to no glitch)
   requestAnimationFrame(update);
 }
 
 update();
+
+
 
