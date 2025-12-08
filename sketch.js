@@ -122,5 +122,20 @@ function update() {
 
 update();
 
+// Load MediaPipe Hands model (not written by me(altered), basic set up, had to look up)
+const model = window.handPoseDetection.SupportedModels.MediaPipeHands;
+const detectorConfig = {
+  runtime: "mediapipe",
+  //URL where model files are hosted
+  solutionPath: "https://cdn.jsdelivr.net/npm/@mediapipe/hands",
+  //only using 1 hand in tis project
+  maxHands: 1,
+  //gives full accurarcy vs. "lite" which is faster but less accurate
+  modelType: "full",
+};
+
+// creating a detector
+detector = 
+
 
 
