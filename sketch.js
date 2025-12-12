@@ -135,7 +135,11 @@ const detectorConfig = {
 };
 
 // creating a detector
-detector = 
+detector = window.handPoseDetection.createDetector(model, detectorConfig);
 
+// Runs hand detection on current video frame
+const hands = detector.estimateHands(video);
 
+// Transforms hand landmarks to canvas coordinates
+const handPositions = hands.map(hand);
 
