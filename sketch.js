@@ -4,9 +4,10 @@
 //
 
 // Sources:
-// https://mediapipe.readthedocs.io/en/latest/solutions/hands.html
-// https://www.w3schools.com/graphics/canvas_drawing.asp
-// https://www.youtube.com/watch?v=vfNHdVbE-l4
+// https://mediapipe.readthedocs.io/en/latest/solutions/hands.html (Mediappipe Library Download)
+// https://www.w3schools.com/graphics/canvas_drawing.asp (creating a canvas syntax)
+// https://www.youtube.com/watch?v=vfNHdVbE-l4 (Madipipe Library intro)
+// https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker/web_js (Hand Landmarks reference)
 
 
 // Extra for Experts:
