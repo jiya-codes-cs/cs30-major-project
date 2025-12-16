@@ -8,6 +8,7 @@
 // https://www.w3schools.com/graphics/canvas_drawing.asp (creating a canvas syntax)
 // https://www.youtube.com/watch?v=vfNHdVbE-l4 (Madipipe Library intro)
 // https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker/web_js (Hand Landmarks reference)
+// https://codepen.io/mediapipe-preview/pen/gOKBGPN (Hand Landmark Demos using HTML, CSS, and Javascript (specifically webcam))
 
 
 // Extra for Experts:
@@ -162,12 +163,13 @@ const detectorConfig = {
   modelType: "full",
 };
 
-// creating a detector
-detector = window.handPoseDetection.createDetector(model, detectorConfig);
+// // creating a detector
+// detector = window.handPoseDetection.createDetector(model, detectorConfig);
 
-// Runs hand detection on current video frame
-const hands = detector.estimateHands(video);
+// // Runs hand detection on current video frame
+// const hands = detector.estimateHands(video);
 
-// Transforms hand landmarks to canvas coordinates
-const handPositions = hands.map(hand);
+// // Transforms hand landmarks to canvas coordinates
+// const handPositions = hands.map(hand);
+
 
