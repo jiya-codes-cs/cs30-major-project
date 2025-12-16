@@ -33,6 +33,33 @@ const ctx = canvas.getContext("2d");
 const canvasWidth = canvas.width;
 const canvasHeight = canvas.height;
 
+
+// let hands = new Hands({
+//   locateFile: function(file) {
+//     return "https://cdn.jsdelivr.net/npm/@mediapipe/hands/" + file;
+//   }
+// });
+
+// connects MediaPipe to the webcam
+let camera = new Camera(video, {
+  onFrame: async function() {
+    await hands.send({ image: video });
+  },
+  width: 700,
+  height: 525
+});
+
+camera.start();
+
+hands.setOptions({
+  maxNumHands: 1,
+  modelComplexity: 1,
+  minDetectionConfidence: 0.7,
+  minTrackingConfidence: 0.7
+});
+
+hands.onResults(onHandResults);
+
 // make circle
 class Circle {
   constructor(x, y, color, radius) {
