@@ -35,31 +35,10 @@ const canvasWidth = canvas.width;
 const canvasHeight = canvas.height;
 
 
-// let hands = new Hands({
-//   locateFile: function(file) {
-//     return "https://cdn.jsdelivr.net/npm/@mediapipe/hands/" + file;
-//   }
-// });
-
-// connects MediaPipe to the webcam
-let camera = new Camera(video, {
-  onFrame: async function() {
-    await hands.send({ image: video });
-  },
-  width: 700,
-  height: 525
-});
-
-camera.start();
-
-hands.setOptions({
-  maxNumHands: 1,
-  modelComplexity: 1,
-  minDetectionConfidence: 0.7,
-  minTrackingConfidence: 0.7
-});
-
-hands.onResults(onHandResults);
+// these variables store the AI model and results
+let handLandmarker = null;
+let lastVideoTime = -1;
+let handResults = null;
 
 // make circle
 class Circle {
@@ -144,32 +123,77 @@ app.setLetters([
 ]);
 
 function update() {
-  app.drawEverything();
+  ctx.drawImage(video, 0, 0, canvasWidth, canvasHeight); // draw webcam onto canvas
+
+  detectHands();        // detect hand landmarks
+  app.drawEverything(); // draw alphabet circle
+  drawHandPoints();     // draw hand on canvas
+
   // this is a function that runs just before the screen so that it helps before redrawing the screen which allows a smoother transition (meaning minimum to no glitch)
   requestAnimationFrame(update);
 }
 
-update();
+// variables declared
+const FilesetResolver = window.FilesetResolver;
+const HandLandmarker = window.HandLandmarker;
 
-// Load MediaPipe Hands model (not written by me(altered), basic set up, had to look up)
-const model = window.handPoseDetection.SupportedModels.MediaPipeHands;
-const detectorConfig = {
-  runtime: "mediapipe",
-  //URL where model files are hosted
-  solutionPath: "https://cdn.jsdelivr.net/npm/@mediapipe/hands",
-  //only using 1 hand in tis project
-  maxHands: 1,
-  //gives full accurarcy vs. "lite" which is faster but less accurate
-  modelType: "full",
+// load the MediaPipe hand model (not written by me, required library setup)
+// MediaPipe requires a pre-trained model file to recognize hands. This code loads it before detection starts.
+async function loadHandModel() {
+  const vision = await FilesetResolver.forVisionTasks(
+    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm"
+  );
+
+  handLandmarker = await HandLandmarker.createFromOptions(vision, {
+    baseOptions: {
+      modelAssetPath:
+        "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task"
+    },
+    runningMode: "VIDEO",
+    numHands: 1
+  });
+}
+
+// start loading the model
+loadHandModel();
+
+function detectHands() {
+  if (handResults && handResults.landmarks) {
+    console.log("Hand detected!");
+  }
+  if (handLandmarker === null) {
+    return;
+  }
+
+  if (video.currentTime === lastVideoTime) {
+    return;
+  }
+
+  lastVideoTime = video.currentTime;
+  handResults = handLandmarker.detectForVideo(video, performance.now());
+}
+
+function drawHandPoints() {
+  if (!handResults || !handResults.landmarks) {
+    return;
+  }
+
+  ctx.fillStyle = "red";
+
+  for (let i = 0; i < handResults.landmarks.length; i++) {
+    let hand = handResults.landmarks[i];
+
+    for (let j = 0; j < hand.length; j++) {
+      let x = hand[j].x * canvasWidth;
+      let y = hand[j].y * canvasHeight;
+
+      ctx.beginPath();
+      ctx.arc(x, y, 4, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+}
+
+video.onloadeddata = function () {
+  update();
 };
-
-// // creating a detector
-// detector = window.handPoseDetection.createDetector(model, detectorConfig);
-
-// // Runs hand detection on current video frame
-// const hands = detector.estimateHands(video);
-
-// // Transforms hand landmarks to canvas coordinates
-// const handPositions = hands.map(hand);
-
-
