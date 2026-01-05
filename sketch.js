@@ -60,10 +60,16 @@ hands.onResults(function (results) {
   handResults = results;
 });
 
+// helper function to check if the finger is extended or not (*** can change the format to just landmarks based on readability of the code ***)
+function isFingerOpen(TipIndex, BaseIndex) {
+  const TipY = landmarks[TipIndex].y;
+  const BaseY = landmarks[BaseIndex].y;
+  return TipY < BaseY;  // checks if finger is open
+}
+
 // camera helper (MediaPipe utility)
 // this sends webcam frames to the hand detector
 // referenced and simplified from MediaPipe examples (modified by me)
-
 const camera = new Camera(video, {
   onFrame: async function () {
     await hands.send({ image: video });
@@ -130,7 +136,7 @@ class App {
 // creates app and load alphabet
 let app = new App();
 
-//added the letters to be covering the circle
+// added the letters to be covering the circle
 app.setLetters([
   "A","B","C","D","E","F","G",
   "H","I","J","K","L","M","N",
