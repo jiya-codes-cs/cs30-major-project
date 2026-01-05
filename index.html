@@ -1,27 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<head>
+  <meta charset="utf-8">
+  <title>CS 30 Major Project</title>
 
-    <title>CS 30 Major Project</title>
+  <link rel="stylesheet" href="style.css">
 
-    <link rel="stylesheet" type="text/css" href="style.css">
+  <!-- MediaPipe Hands (linked libraries) -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+</head>
 
-    <!-- <Linked MediaPipe libraries> -->
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+<body>
+  <h1>Hand Gesture Interface</h1>
 
-  </head>
+  <!-- <Looked up the part for permissions and syntax refernce (where it asks if it can turn on my camera)> -->
+  <div id="viewArea">
+    <video id="webcam" autoplay playsinline></video>
+    <canvas id="canvas" width="1000" height="750"></canvas>
+  </div>
 
-  <body>
-    <h1>Hand Gesture Interface</h1>
-    <!-- <Looked up the part for permissions (where it asks if it can turn on my camera)> -->
-    <div id="viewArea">
-      <video id="webcam" autoplay playsinline></video>
-      <canvas id="canvas" width="1000" height="750"></canvas>
-    </div>
-
-    <script src="sketch.js"></script>
-  </body>
+  <script src="sketch.js"></script>
+</body>
 </html>
