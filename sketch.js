@@ -75,8 +75,8 @@ hands.onResults(function (results) {
     // added a small buffer to make the detection less vague
     const indexOpen = landmarks[8].y < landmarks[6].y - 0.02;      // index finger
     const middleOpen = landmarks[12].y < landmarks[10].y - 0.02;   // middle finger
-    const ringOpen = landmarks[16].y < landmarks[14].y;;             // ring finger
-    const pinkyOpen = landmarks[20].y < landmarks[18].y;;            // pinky finger
+    const ringOpen = landmarks[16].y < landmarks[14].y;;           // ring finger
+    const pinkyOpen = landmarks[20].y < landmarks[18].y;;          // pinky finger
 
     // thumb is special in this case 
     // we will do a horizontal check to confirm that while index and middle are open it is open too
@@ -156,6 +156,13 @@ class LetterManager {
 
       //draw
       ctx.fillText(this.letters[i], x, y);
+
+      // finds which letter is at the top (-Math.PI * 2)
+      let normalizedRotation = wheelRotation % (Math.PI * 2);
+      let index = Math.round(-normalizedRotation / angleStep) % total;
+
+      // draw it exactly at centerX, centerY
+      ctx.fillText(selectedLetter, centerX, centerY);
 
       // reset shadow so it doesn't affect other drawings (like red dots)
       ctx.shadowBlur = 0;
