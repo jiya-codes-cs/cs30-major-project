@@ -37,6 +37,7 @@ navigator.mediaDevices.getUserMedia({ video: true })
 // these variables store the hand detection results
 // set to null(the variable exists but it's currrently empty therefore no value) because there are no hand results yet whern the program starts
 let handResults = null;
+let wheelRotation = 0; // this stores the current turn of the wheel
 
 // MediaPipe Hands setup
 // this code loads the AI model that detects hands
@@ -47,25 +48,57 @@ const hands = new Hands({
   }
 });
 
+// helper function to check if the finger is extended or not
+function isFingerOpen(landmarks ,tipIndex, baseIndex) {
+  // on computer small y means higher on the screen
+  return landmarks[tipIndex].y < landmarks[baseIndex].y;  // checks if finger is open
+}
+
 // setting options for the hand tracking
 hands.setOptions({
-  maxNumHands: 1,   // only track one hand 
-  modelComplexity: 1,
+  maxNumHands: 1,     // only track one hand 
+  modelComplexity: 0, // 0 is fast, 1 is balanced
   minDetectionConfidence: 0.7,
   minTrackingConfidence: 0.7
 });
 
 // this function runs every time MediaPipe finds hands
 hands.onResults(function (results) {
-  handResults = results;
-});
+  handResults = results; // keeps the original line
 
-// helper function to check if the finger is extended or not (*** can change the format to just landmarks based on readability of the code ***)
-function isFingerOpen(TipIndex, BaseIndex) {
-  const TipY = landmarks[TipIndex].y;
-  const BaseY = landmarks[BaseIndex].y;
-  return TipY < BaseY;  // checks if finger is open
-}
+  // checks if hand is on screen 
+  if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+    const landmarks = results.multiHandLandmarks[0];
+
+    // identifies all fingers state 
+    // we check the (tip coordinate) for accurate detection
+    // added a small buffer to make the detection less vague
+    const indexOpen = landmarks[8].y < landmarks[6].y - 0.02;      // index finger
+    const middleOpen = landmarks[12].y < landmarks[10].y - 0.02;   // middle finger
+    const ringOpen = landmarks[16].y < landmarks[14].y;;             // ring finger
+    const pinkyOpen = landmarks[20].y < landmarks[18].y;;            // pinky finger
+
+    // thumb is special in this case 
+    // we will do a horizontal check to confirm that while index and middle are open it is open too
+    const thumbOpen = Math.abs(landmarks[4].x - landmarks[2].x) > 0.08;
+
+    // rotation speed that can be adjusted (decrease by 0.01 to go slower)
+    let rotationSpeed = 0.02;
+
+    // Now we assign actions if certain fingers are open
+    if (indexOpen && thumbOpen && !middleOpen && !ringOpen && !pinkyOpen) {
+      // rotation from A to M (use -= to rotate counter-clockwise)
+      wheelRotation -= rotationSpeed;
+    }
+    else if (indexOpen && middleOpen && thumbOpen && !ringOpen && !pinkyOpen) {
+      // rotation from N to Z (use += to rotate clock wise)
+      wheelRotation += rotationSpeed;
+    }
+    // else {
+    //   console.log("Checking Hand...");
+    // }
+  }
+});
 
 // camera helper (MediaPipe utility)
 // this sends webcam frames to the hand detector
@@ -100,16 +133,32 @@ class LetterManager {
       return;
     }
 
+    // this will help us find out how far away do the letters have to sit from the wheel
+    let radius = 200;
+
     let angleStep = Math.PI * 2 / total;
 
     for (let i = 0; i < total; i++) {
-      let angle = i * angleStep - Math.PI / 2;
-      let x = centerX + Math.cos(angle) * this.circleRadius;
-      let y = centerY + Math.sin(angle) * this.circleRadius;
+      // adding wheel rotation here to make the letters move
+      let angle = i * angleStep - Math.PI / 2 + wheelRotation;
 
-      ctx.font = "bold 26px Courier New";
+      let x = centerX + Math.cos(angle) * radius;
+      let y = centerY + Math.sin(angle) * radius;
+
+      ctx.font = "bold 35px Arial";
+      ctx.shadowColor = "black";
+      ctx.shadowBlur = 7;
       ctx.fillStyle = "white";
+
+      // aligned text so it's not "stuck" in the center
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      //draw
       ctx.fillText(this.letters[i], x, y);
+
+      // reset shadow so it doesn't affect other drawings (like red dots)
+      ctx.shadowBlur = 0;
     }
   }
 }
@@ -118,10 +167,12 @@ class LetterManager {
 // controls where the alphabet wheel is drawn
 class App {
   constructor() {
-    const padding = 215; // space from right side
-    this.centerX = canvasWidth - padding;
-    this.centerY = canvasHeight / 2;
+    // centering the wheel on the right hand side of the screen
+    this.centerX = 750;
+    this.centerY = 375; // exactly half of 750 height
     this.letterManager = new LetterManager();
+    // reasonable size set for letters
+    this.letterManager.circleRadius = 200;
   }
 
   setLetters(list) {
@@ -152,9 +203,12 @@ function draw() {
 
   // draw alphabet wheel
   app.drawEverything();
-
-  // draw red dots where the hand landmarks are
-  drawHandLandmarks();
+  
+  // draw only if the landmarks exist
+  if (handResults && handResults.multiHandLandmarks) {
+    // draw red dots where the hand landmarks are
+    drawHandLandmarks();
+  }
 
   // keeps looping before the next screen refresh
   requestAnimationFrame(draw);
