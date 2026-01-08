@@ -75,15 +75,15 @@ hands.onResults(function (results) {
     // added a small buffer to make the detection less vague
     const indexOpen = landmarks[8].y < landmarks[6].y - 0.02;      // index finger
     const middleOpen = landmarks[12].y < landmarks[10].y - 0.02;   // middle finger
-    const ringOpen = landmarks[16].y < landmarks[14].y;;           // ring finger
-    const pinkyOpen = landmarks[20].y < landmarks[18].y;;          // pinky finger
+    const ringOpen = landmarks[16].y < landmarks[9].y;;            // ring finger
+    const pinkyOpen = landmarks[20].y < landmarks[9].y;;           // pinky finger
 
     // thumb is special in this case 
     // we will do a horizontal check to confirm that while index and middle are open it is open too
     const thumbOpen = Math.abs(landmarks[4].x - landmarks[2].x) > 0.08;
 
     // rotation speed that can be adjusted (decrease by 0.01 to go slower)
-    let rotationSpeed = 0.02;
+    let rotationSpeed = 0.025; // nice slow and steady speed for the letters movement
 
     // Now we assign actions if certain fingers are open
     if (indexOpen && thumbOpen && !middleOpen && !ringOpen && !pinkyOpen) {
@@ -94,9 +94,11 @@ hands.onResults(function (results) {
       // rotation from N to Z (use += to rotate clock wise)
       wheelRotation += rotationSpeed;
     }
-    // else {
-    //   console.log("Checking Hand...");
-    // }
+    else {
+      // this cleans the rotation so it's not too huge (mod function keeps the values between 0 - 360)
+      // prevents the code from lagging or breaking after you've spun it
+      wheelRotation = wheelRotation % (Math.PI * 2);
+    }
   }
 });
 
@@ -129,7 +131,7 @@ class LetterManager {
   drawLetters(centerX, centerY) {
     let total = this.letters.length;
     if (total === 0) {
-      // empty return because the function should stop running when there are no letters as it dosn't need to send back any values
+      // empty return because the function should stop running when there are no letters as it doesn't need to send back any values
       return;
     }
 
@@ -141,15 +143,11 @@ class LetterManager {
     for (let i = 0; i < total; i++) {
       // adding wheel rotation here to make the letters move
       let angle = i * angleStep - Math.PI / 2 + wheelRotation;
-
       let x = centerX + Math.cos(angle) * radius;
       let y = centerY + Math.sin(angle) * radius;
 
-      ctx.font = "bold 35px Arial";
-      ctx.shadowColor = "black";
-      ctx.shadowBlur = 7;
+      ctx.font = "bold 30px Arial";
       ctx.fillStyle = "white";
-
       // aligned text so it's not "stuck" in the center
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
@@ -157,15 +155,23 @@ class LetterManager {
       //draw
       ctx.fillText(this.letters[i], x, y);
 
+      // the letter that's closest from the top gets selected
+      // this math calculates the index based on rotation
       // finds which letter is at the top (-Math.PI * 2)
-      let normalizedRotation = wheelRotation % (Math.PI * 2);
-      let index = Math.round(-normalizedRotation / angleStep) % total;
+      let index = Math.round(-wheelRotation / angleStep) % total;
+
+      // handles negative results from the mod function
+      if (index < 0) {
+        index += total;
+      }
+
+      let selectedLetter = this.letters[index];
+      // this draws the selected letter in the middle
+      ctx.font = "bold 250px Arial";
+      ctx.fillStyle = "yellow";
 
       // draw it exactly at centerX, centerY
       ctx.fillText(selectedLetter, centerX, centerY);
-
-      // reset shadow so it doesn't affect other drawings (like red dots)
-      ctx.shadowBlur = 0;
     }
   }
 }
