@@ -38,6 +38,7 @@ navigator.mediaDevices.getUserMedia({ video: true })
 // set to null(the variable exists but it's currrently empty therefore no value) because there are no hand results yet whern the program starts
 let handResults = null;
 let wheelRotation = 0; // this stores the current turn of the wheel
+let lockedLetter = ""; // this will store the letter we pinched (selected)
 
 // MediaPipe Hands setup
 // this code loads the AI model that detects hands
@@ -82,6 +83,15 @@ hands.onResults(function (results) {
     // we will do a horizontal check to confirm that while index and middle are open it is open too
     const thumbOpen = Math.abs(landmarks[4].x - landmarks[2].x) > 0.08;
 
+    // pinch detection (locking the letter)
+    // we do this by checking how far is index tip (4) is from index tip (8)
+    let dx = landmarks[4].x - landmarks[8].x;
+    let dy = landmarks[4].y - landmarks[8].y; 
+
+    // uses pythagorean theorem to find the total distance between thumb and index finger in pixels
+    // asked ai for a couple suggestions (logic without code) on how to implement this and it came up with pythagorean theorem
+    let distance = Math.sqrt(dx * dx + dy * dy);
+
     // rotation speed that can be adjusted (decrease by 0.01 to go slower)
     let rotationSpeed = 0.025; // nice slow and steady speed for the letters movement
 
@@ -93,6 +103,32 @@ hands.onResults(function (results) {
     else if (indexOpen && middleOpen && thumbOpen && !ringOpen && !pinkyOpen) {
       // rotation from N to Z (use += to rotate clock wise)
       wheelRotation += rotationSpeed;
+    }
+    
+    // pinch fingers logic
+    // here, if the distance is less than 0.05 then it means that the fingers are touching "pinching"
+    if (distance < 0.05) {
+      // first we will find which letter is at the top
+      let total = 26; // total letters
+      let angleStep = Math.PI * 2 / total;
+
+      // we take the rotation and then divide by the gap size
+      // this tells us how many spaces the wheel has turned
+      // Math.round turns this into a whole number (like 4 intead of 4.29)
+      // % total makes sure the number stays between 0 - 25 (cause remember we start from 0 not 1 in comp sci)
+      let index = Math.round (-wheelRotation / angleStep) % total;
+
+      // here, if you spin the wheel backwards we will end up with a negative number
+      // since an array can't have a negative number we add that total to (26) to fix it
+      // for example: -1 becomes letter 25 which is alphabet Z
+      if (index < 0) {
+        index += total;
+      }
+      
+      // now, we look at that letter in our list
+      lockedLetter = app.letterManager.letters[index];
+
+      console.log("Locked Letter: " + lockedLetter);
     }
     else {
       // this cleans the rotation so it's not too huge (mod function keeps the values between 0 - 360)
@@ -148,6 +184,7 @@ class LetterManager {
 
       ctx.font = "bold 30px Arial";
       ctx.fillStyle = "white";
+
       // aligned text so it's not "stuck" in the center
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
@@ -222,6 +259,16 @@ function draw() {
     // draw red dots where the hand landmarks are
     drawHandLandmarks();
   }
+
+  // display the locked letter
+  ctx.font = "bold 50px Arial";
+
+  // makes it look different and we know that this letter is the one we have selected
+  ctx.fillStyle = "yellow"; 
+  ctx.textAlign = "left";
+
+  // draws the text on the top left corner
+  ctx.fillText("Selected: " + lockedLetter, 600, 650);
 
   // keeps looping before the next screen refresh
   requestAnimationFrame(draw);
