@@ -39,6 +39,19 @@ navigator.mediaDevices.getUserMedia({ video: true })
 let handResults = null;
 let wheelRotation = 0; // this stores the current turn of the wheel
 let lockedLetter = ""; // this will store the letter we pinched (selected)
+let wheelColor = "yellow";
+let showColorMenu = false; //keeps track of the drop down box (open/closed)
+let hoverStartTime = 0;
+let hoveringIndex = -1; // stores which specific squares we're hovering over
+
+// this will hold our 20 pastel colors (ordered like this in code for better view)
+let pastelColors = [
+  "lightpink", "lightsalmon", "lemonchiffon", "lightgreen", "paleturquoise",
+  "lightblue", "thistle", "mistirose", "lavender", "honeydew",
+  "peachpuff", "powderblue", "lightcyan", "bisque", "azure",
+  "lightgray", "pink", "wheat", "aquamarine", "cornsilk"
+]; 
+
 
 // MediaPipe Hands setup
 // this code loads the AI model that detects hands
@@ -135,6 +148,51 @@ hands.onResults(function (results) {
       // prevents the code from lagging or breaking after you've spun it
       wheelRotation = wheelRotation % (Math.PI * 2);
     }
+
+    // color picker logic
+    const fingerX = landmarks[8].x * canvasWidth;
+    const fingerY = landmarks[8].y * canvasHeight;
+
+    // checks if finger is hovering over the menu box ( which is at the top left - 50, 50, size 50)
+    if (fingerX > 50 && fingerX < 100 && fingerY > 50 && fingerY < 100) {
+      showColorMenu = true;
+    }
+
+    // here we can select the colors uinside the drop down menu
+    if (showColorMenu) {
+      let foundHover = false;
+
+      // we will loop through our grid of 20 squares
+      for (let i = 0; i < pastelColors.length; i++) {
+        let column = i % 5;
+        let row = Math.floor(i / 5);
+        let x = 50 + column * 45; // matching the grid that's in draw()
+        let y = 110 + row * 45;
+
+        // Check if index finger is inside this tiny square
+        if (fingerX > x && fingerX < x + 40 && fingerY > y && fingerY < y + 40) {
+          foundHover = true;
+
+          if (hoveringIndex !== i) {
+            // just started hovering over a new square
+            hoveringIndex = i;
+            hoverStartTime = Date.now(); // records the exact millisecond we started (searched up what feature to use)
+          }
+          else {
+          // we have been hovering over over the same square (Check if 2 seconds (2000 ms) has passed)
+            if (Date.now() - hoverStartTime > 2000) {
+              wheelColor = pastelColors[i]; // here we update to the new color now
+              showColorMenu = false; // closes menu after selection
+            }
+          }
+        }  
+      }
+      // if we aren't touching any square we reset the hover data
+      if (!foundHover) {
+        hoveringIndex = -1;
+        hoverStartTime = 0;
+      } 
+    }
   }
 });
 
@@ -205,7 +263,7 @@ class LetterManager {
       let selectedLetter = this.letters[index];
       // this draws the selected letter in the middle
       ctx.font = "bold 250px Arial";
-      ctx.fillStyle = "yellow";
+      ctx.fillStyle = wheelColor;
 
       // draw it exactly at centerX, centerY
       ctx.fillText(selectedLetter, centerX, centerY);
@@ -269,6 +327,41 @@ function draw() {
 
   // draws the text on the top left corner
   ctx.fillText("Selected: " + lockedLetter, 600, 650);
+
+  //displays the main button to open the menu
+  ctx.fillStyle = "white";
+  ctx.fillRect(50, 50, 50, 50);
+  ctx.font = "15px Arial";
+  ctx.fillStyle = "black";
+  ctx.fillText("COLOR", 52, 80);
+
+  if (showColorMenu) {
+    // draws 20 tiny squares
+    for (let i = 0; i < pastelColors.length; i++) {
+      let column = i % 5;
+      let row = Math.floor(i/ 5);
+      let x = 50 + column * 45; 
+      let y = 110 + row * 45;
+
+      ctx.fillStyle = pastelColors[i];
+      ctx.fillRect(x, y, 40, 40);
+
+      // draws a white border if we're hovering
+      if (hoveringIndex === i) {
+        ctx.strokeStyle = "white";
+        ctx.lineWidth = 3;
+        ctx.strokeRect(x, y, 40, 40);
+
+        // show a loading bar for the 2 second wait
+        let progress = (Date.now() - hoverStartTime) / 2000;
+
+        // alpha value addded at the end for a bit of transparency
+        ctx.fillStyle = "rgba(255, 255, 255, 0.5)"; 
+        ctx.fillRect(x, y + 35, 40 * progress, 5);
+
+      }
+    }
+  }
 
   // keeps looping before the next screen refresh
   requestAnimationFrame(draw);
