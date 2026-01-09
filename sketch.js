@@ -5,14 +5,14 @@
 
 // Sources:
 // https://mediapipe.readthedocs.io/en/latest/solutions/hands.html (Mediappipe Library Download)
-// https://www.w3schools.com/graphics/canvas_drawing.asp (creating a canvas syntax)
+// https://www.w3schools.com/graphics/canvas_drawing.asp (creating a canvas syntax and ctx info)
 // https://www.youtube.com/watch?v=vfNHdVbE-l4 (Madipipe Library intro)
 // https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker/web_js (Hand Landmarks reference)
 // https://codepen.io/mediapipe-preview/pen/gOKBGPN (Hand Landmark Demos using HTML, CSS, and Javascript (specifically webcam))
 
 
 // Extra for Experts:
-// - describe what you did to take this project "above and beyond"
+// - help (button) and tutorial (me doing the thing)
 
 // grabs HTML elements using their id 
 // grabs elements by using this function which is used to call an already present HTML element

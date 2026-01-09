@@ -19,4 +19,4 @@
 - Add a feature that increases/ decreases the size of the letter (set a max and min limit) -> - STILL LEFT -
 - Add the color butons on the right side(light hue so it's not extremely overpowering) -> done
 - Also add a design tab on the side that becomes a drop-down later on -> done
-- Add multiple colors as option so all the RGB values -> done
+- Add multiple colors as option so all the RGB values -> done.
