@@ -11,7 +11,7 @@
 - Hand-tracking so they can perform actions (like with index + thumb they can move around the circle) -> done
 - Allot hand gestures for certain things -> - HALF done -
 - Use MediaScript as a hand-tracking Library -> done
-- Add rotating sound effects when the user rotates on the letter arc -> - STILL LEFT -
+- Add rotating sound effects when the user rotates on the letter arc -> - HALF done -
 
 ## Nice to have lists
 - Add a feature so when the user pinches their (index + thumb) it would lock the letter -> done
