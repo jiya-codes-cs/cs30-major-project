@@ -13,6 +13,7 @@
 
 // Extra for Experts:
 // - help (button) and tutorial (me doing the thing)
+// - Implement a multi sensory feedback system by creating a vibration effect when a new letter is selected (Haptic Jiggle Algorithm)
 
 // grabs HTML elements using their id 
 // grabs elements by using this function which is used to call an already present HTML element
@@ -43,6 +44,7 @@ let wheelColor = "yellow";
 let showColorMenu = false; //keeps track of the drop down box (open/closed)
 let hoverStartTime = 0;
 let hoveringIndex = -1; // stores which specific squares we're hovering over
+let jiggleAmount = 0; // stores how much the letter is shaking currently
 
 // this will hold our 20 pastel colors (ordered like this in code for better view)
 let pastelColors = [
@@ -54,7 +56,7 @@ let pastelColors = [
 
 // defining the audio file
 const gearSound = new Audio("gear-click.mp3");
-gearSound.volume = 0.1; 
+gearSound.volume = 0.5; 
 let lastSelectedIndex = -1; // this tracks when the letter actually changes
 
 
@@ -112,7 +114,7 @@ hands.onResults(function (results) {
     let distance = Math.sqrt(dx * dx + dy * dy);
 
     // rotation speed that can be adjusted (decrease by 0.01 to go slower)
-    let rotationSpeed = 0.025; // nice slow and steady speed for the letters movement
+    let rotationSpeed = 0.02; // nice slow and steady speed for the letters movement
 
     // Now we assign actions if certain fingers are open
     if (indexOpen && thumbOpen && !middleOpen && !ringOpen && !pinkyOpen) {
@@ -256,35 +258,55 @@ class LetterManager {
       //draw
       ctx.fillText(this.letters[i], x, y);
 
-      // the letter that's closest from the top gets selected
-      // this math calculates the index based on rotation
-      // finds which letter is at the top (-Math.PI * 2)
-      let index = Math.round(-wheelRotation / angleStep) % total;
+    }
+    // the letter that's closest from the top gets selected
+    // this math calculates the index based on rotation
+    // finds which letter is at the top (-Math.PI * 2)
+    let index = Math.round(-wheelRotation / angleStep) % total;
 
-      // handles negative results from the mod function
-      if (index < 0) {
-        index += total;
-      }
+    // handles negative results from the mod function
+    if (index < 0) {
+      index += total;
+    }
 
-      // only plays the sound if the index has changed (meaning the wheel has moves and a new letter has been generated)
+    // only plays the sound if the index has changed (meaning the wheel has moves and a new letter has been generated)
       
-      // checks if the current letter is different from the one that we saw
-      if (index !== lastSelectedIndex) {
-        // rewind the sound from the very beginning
-        gearSound.currentTime = 0;
-        gearSound.play();
+    // checks if the current letter is different from the one that we saw
+    if (index !== lastSelectedIndex) {
+      // rewind the sound from the very beginning
+      gearSound.currentTime = 0;
+      gearSound.play();
+
+      // every time the gear clicks we set the jiggle to be 15 pixels
+      jiggleAmount = 15;
         
-        // stps the sound from playing again until the wheel moves to a new letter
-        lastSelectedIndex = index;
-      }
+      // stps the sound from playing again until the wheel moves to a new letter
+      lastSelectedIndex = index;
+    }
 
-      let selectedLetter = this.letters[index];
-      // this draws the selected letter in the middle
-      ctx.font = "bold 250px Arial";
-      ctx.fillStyle = wheelColor;
+    let selectedLetter = this.letters[index];
 
-      // draw it exactly at centerX, centerY
-      ctx.fillText(selectedLetter, centerX, centerY);
+    // calculate a random shake based on our jiggle variable
+    // we will use Math.random as it gives a randonm number between 0-1
+    // we center it by subtracting it by 0.5
+    let shakeX = (Math.random() - 0.5) * jiggleAmount;
+    let shakeY = (Math.random() - 0.5) * jiggleAmount;
+
+    // this draws the selected letter in the middle 
+    ctx.font = "bold 250px Arial";
+    ctx.fillStyle = wheelColor;
+
+    // draw it exactly at centerX, centerY while adding shakeX and shakeY
+    ctx.fillText(selectedLetter, centerX + shakeX, centerY + shakeY);
+
+    // remeber we have to slow down the jiggle so it slows eventually
+    if (jiggleAmount > 0) {
+      // used exponential decay math to create physical vibration effect whenever a new letter is selected 
+      jiggleAmount *= 0.8; // reduces the jiggle by 20% each frame
+    }
+
+    if (jiggleAmount < 0.1) {
+      jiggleAmount = 0; // if it's too small just set it to 0
     }
   }
 }
