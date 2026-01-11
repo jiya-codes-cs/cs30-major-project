@@ -52,6 +52,12 @@ let pastelColors = [
   "lightgray", "pink", "wheat", "aquamarine", "cornsilk"
 ]; 
 
+// defining the audio file
+const gearSound = new Audio("gear-click.mp3");
+gearSound.volume = 0.1; 
+let lastSelectedIndex = -1; // this tracks when the letter actually changes
+
+
 
 // MediaPipe Hands setup
 // this code loads the AI model that detects hands
@@ -258,6 +264,18 @@ class LetterManager {
       // handles negative results from the mod function
       if (index < 0) {
         index += total;
+      }
+
+      // only plays the sound if the index has changed (meaning the wheel has moves and a new letter has been generated)
+      
+      // checks if the current letter is different from the one that we saw
+      if (index !== lastSelectedIndex) {
+        // rewind the sound from the very beginning
+        gearSound.currentTime = 0;
+        gearSound.play();
+        
+        // stps the sound from playing again until the wheel moves to a new letter
+        lastSelectedIndex = index;
       }
 
       let selectedLetter = this.letters[index];
