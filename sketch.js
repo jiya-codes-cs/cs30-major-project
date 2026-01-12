@@ -25,6 +25,32 @@ const ctx = canvas.getContext("2d");
 const canvasWidth = canvas.width;
 const canvasHeight = canvas.height;
 
+const ROTATION_SPEED = 0.02;    // how fast the wheeel rotates
+const PINCH_THRESHOLD = 0.05;   // how close the fingers must be in order to be considered as a "pinch"
+const JIGGLE_START = 15;        // at what energy the jiggle starts with 
+const JIGGLE_DECAY = 0.8;       // how fast the jiggle slows down by 80%
+const MENU_X = 50;              // position of the color menu tab
+const MENU_Y = 50;
+const MENU_SIZE = 50;
+const HOVER_TIME_NEEDED = 2000; // 2 seconds in milliseconds
+
+
+// set to null (the variable exists but it's currrently empty therefore no value) because there are no hand results yet whern the program starts
+let handResults = null; // this variables store the hand detection results
+let wheelRotation = 0; // this stores the current turn of the wheel
+
+let lockedLetter = ""; // this will store the letter we pinched (selected)
+let wheelColor = "yellow";
+let showColorMenu = false; // keeps track of the drop down box (open/closed)
+
+let hoverStartTime = 0;
+let hoveringIndex = -1; // stores which specific squares we're hovering over
+let jiggleAmount = 0; // stores how much the letter is shaking currently
+
+// we chose -1 as the starting point because an array can never be a negative index 
+// since our A letter is at index 0 we would avoid to start the index from there to play the sound as we only want it to play when it's rotated 
+let lastSelectedIndex = -1; // this tracks when the letter actually changes
+
 // webcam setup (looked up and adapted, not written fully by me)
 // this part allows the browser to ask permission to use the webcam
 navigator.mediaDevices.getUserMedia({ video: true })
@@ -35,16 +61,7 @@ navigator.mediaDevices.getUserMedia({ video: true })
     console.log("Webcam error:", error);
   });
 
-// these variables store the hand detection results
-// set to null (the variable exists but it's currrently empty therefore no value) because there are no hand results yet whern the program starts
-let handResults = null;
-let wheelRotation = 0; // this stores the current turn of the wheel
-let lockedLetter = ""; // this will store the letter we pinched (selected)
-let wheelColor = "yellow";
-let showColorMenu = false; // keeps track of the drop down box (open/closed)
-let hoverStartTime = 0;
-let hoveringIndex = -1; // stores which specific squares we're hovering over
-let jiggleAmount = 0; // stores how much the letter is shaking currently
+
 
 // this will hold our 20 pastel colors (ordered like this in code for better view)
 let pastelColors = [
@@ -57,12 +74,6 @@ let pastelColors = [
 // defining the audio file
 const gearSound = new Audio("gear-click.mp3");
 gearSound.volume = 0.5; 
-
-// we chose -1 as the starting point because an array can never be a negative index 
-// since our A letter is at index 0 we would avoid to start the index from there to play the sound as we only want it to play when it's rotated 
-let lastSelectedIndex = -1; // this tracks when the letter actually changes
-
-
 
 // MediaPipe Hands setup
 // this code loads the AI model that detects hands
@@ -98,8 +109,8 @@ hands.onResults(function (results) {
     // identifies all fingers state 
     // we check the (tip coordinate) for accurate detection
     // added a small buffer to make the detection less vague
-    const indexOpen = landmarks[8].y < landmarks[6].y - 0.02;      // index finger
-    const middleOpen = landmarks[12].y < landmarks[10].y - 0.02;   // middle finger
+    const indexOpen = landmarks[8].y < landmarks[6].y - ROTATION_SPEED;      // index finger
+    const middleOpen = landmarks[12].y < landmarks[10].y - ROTATION_SPEED;   // middle finger
     const ringOpen = landmarks[16].y < landmarks[9].y;;            // ring finger
     const pinkyOpen = landmarks[20].y < landmarks[9].y;;           // pinky finger
 
@@ -116,9 +127,6 @@ hands.onResults(function (results) {
     // asked ai for a couple suggestions (logic without code) on how to implement this and it came up with pythagorean theorem
     let distance = Math.sqrt(dx * dx + dy * dy);
 
-    // rotation speed that can be adjusted (decrease by 0.01 to go slower)
-    let rotationSpeed = 0.02; // nice slow and steady speed for the letters movement
-
     // Now we assign actions if certain fingers are open
     if (indexOpen && thumbOpen && !middleOpen && !ringOpen && !pinkyOpen) {
       // rotation from A to M (use -= to rotate counter-clockwise)
@@ -131,7 +139,7 @@ hands.onResults(function (results) {
     
     // pinch fingers logic
     // here, if the distance is less than 0.05 then it means that the fingers are touching "pinching"
-    if (distance < 0.05) {
+    if (distance < PINCH_THRESHOLD) {
       // first we will find which letter is at the top
       let total = 26; // total letters
       let angleStep = Math.PI * 2 / total;
@@ -165,7 +173,7 @@ hands.onResults(function (results) {
     const fingerY = landmarks[8].y * canvasHeight;
 
     // checks if finger is hovering over the menu box ( which is at the top left - 50, 50, size 50)
-    if (fingerX > 50 && fingerX < 100 && fingerY > 50 && fingerY < 100) {
+    if (fingerX > MENU_X && fingerX < (MENU_X + MENU_SIZE) && fingerY > MENU_Y && fingerY < (MENU_Y + MENU_SIZE)) {
       showColorMenu = true;
     }
 
@@ -191,7 +199,7 @@ hands.onResults(function (results) {
           }
           else {
           // we have been hovering over over the same square (Check if 2 seconds (2000 ms) has passed)
-            if (Date.now() - hoverStartTime > 2000) {
+            if (Date.now() - hoverStartTime > HOVER_TIME_NEEDED) {
               wheelColor = pastelColors[i]; // here we update to the new color now
               showColorMenu = false; // closes menu after selection
             }
@@ -281,7 +289,7 @@ class LetterManager {
       gearSound.play();
 
       // every time the gear clicks we set the jiggle to be 15 pixels
-      jiggleAmount = 15;
+      jiggleAmount = JIGGLE_START;
         
       // stps the sound from playing again until the wheel moves to a new letter
       lastSelectedIndex = index;
@@ -305,7 +313,7 @@ class LetterManager {
     // remeber we have to slow down the jiggle so it slows eventually
     if (jiggleAmount > 0) {
       // used exponential decay math to create physical vibration effect whenever a new letter is selected 
-      jiggleAmount *= 0.8; // reduces the jiggle by 20% each frame
+      jiggleAmount *= JIGGLE_DECAY; // reduces the jiggle by 20% each frame
     }
 
     if (jiggleAmount < 0.1) {
@@ -373,10 +381,10 @@ function draw() {
 
   //displays the main button to open the menu
   ctx.fillStyle = "white";
-  ctx.fillRect(50, 50, 50, 50);
+  ctx.fillRect(MENU_X, MENU_Y, MENU_SIZE, MENU_SIZE);
   ctx.font = "15px Courier";
   ctx.fillStyle = "black";
-  ctx.fillText("COLOR", 52, 80);
+  ctx.fillText("COLOR", MENU_X + 2, MENU_Y + 30);
 
   if (showColorMenu) {
     // draws 20 tiny squares
