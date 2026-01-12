@@ -36,12 +36,12 @@ navigator.mediaDevices.getUserMedia({ video: true })
   });
 
 // these variables store the hand detection results
-// set to null(the variable exists but it's currrently empty therefore no value) because there are no hand results yet whern the program starts
+// set to null (the variable exists but it's currrently empty therefore no value) because there are no hand results yet whern the program starts
 let handResults = null;
 let wheelRotation = 0; // this stores the current turn of the wheel
 let lockedLetter = ""; // this will store the letter we pinched (selected)
 let wheelColor = "yellow";
-let showColorMenu = false; //keeps track of the drop down box (open/closed)
+let showColorMenu = false; // keeps track of the drop down box (open/closed)
 let hoverStartTime = 0;
 let hoveringIndex = -1; // stores which specific squares we're hovering over
 let jiggleAmount = 0; // stores how much the letter is shaking currently
@@ -57,6 +57,9 @@ let pastelColors = [
 // defining the audio file
 const gearSound = new Audio("gear-click.mp3");
 gearSound.volume = 0.5; 
+
+// we chose -1 as the starting point because an array can never be a negative index 
+// since our A letter is at index 0 we would avoid to start the index from there to play the sound as we only want it to play when it's rotated 
 let lastSelectedIndex = -1; // this tracks when the letter actually changes
 
 
@@ -248,7 +251,7 @@ class LetterManager {
       let x = centerX + Math.cos(angle) * radius;
       let y = centerY + Math.sin(angle) * radius;
 
-      ctx.font = "bold 30px Arial";
+      ctx.font = "bold 30px Courier";
       ctx.fillStyle = "white";
 
       // aligned text so it's not "stuck" in the center
@@ -293,7 +296,7 @@ class LetterManager {
     let shakeY = (Math.random() - 0.5) * jiggleAmount;
 
     // this draws the selected letter in the middle 
-    ctx.font = "bold 250px Arial";
+    ctx.font = "bold 250px Courier";
     ctx.fillStyle = wheelColor;
 
     // draw it exactly at centerX, centerY while adding shakeX and shakeY
@@ -359,19 +362,19 @@ function draw() {
   }
 
   // display the locked letter
-  ctx.font = "bold 50px Arial";
+  ctx.font = "bold 50px Courier";
 
   // makes it look different and we know that this letter is the one we have selected
   ctx.fillStyle = "yellow"; 
   ctx.textAlign = "left";
-
+ 
   // draws the text on the top left corner
   ctx.fillText("Selected: " + lockedLetter, 600, 650);
 
   //displays the main button to open the menu
   ctx.fillStyle = "white";
   ctx.fillRect(50, 50, 50, 50);
-  ctx.font = "15px Arial";
+  ctx.font = "15px Courier";
   ctx.fillStyle = "black";
   ctx.fillText("COLOR", 52, 80);
 
