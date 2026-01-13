@@ -9,7 +9,8 @@
 // https://www.youtube.com/watch?v=vfNHdVbE-l4 (Madipipe Library intro)
 // https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker/web_js (Hand Landmarks reference)
 // https://codepen.io/mediapipe-preview/pen/gOKBGPN (Hand Landmark Demos using HTML, CSS, and Javascript (specifically webcam))
-
+// https://github.com/LintangWisesa/MediaPipe-in-JavaScript/tree/master/js (Mediapipe-in-JavaScript Repo)
+// https://github.com/collidingScopes/shape-creator-tutorial/blob/main/main.js (ctx-style-writing Repo)
 
 // Extra for Experts:
 // - help (button) and tutorial (me doing the thing)
@@ -55,6 +56,7 @@ let jiggleAmount = 0; // stores how much the letter is shaking currently
 let lastSelectedIndex = -1; // this tracks when the letter actually changes
 
 // webcam setup (looked up and adapted, not written fully by me)
+// referenced from Mediapipe-in-JavaScript Repo
 // this part allows the browser to ask permission to use the webcam
 navigator.mediaDevices.getUserMedia({ video: true })
   .then(function (stream) {
@@ -87,6 +89,7 @@ gearSound.volume = 0.5;
 // MediaPipe Hands setup
 // this code loads the AI model that detects hands
 // referenced from MediaPipe documentation and examples
+
 const hands = new Hands({
   locateFile: function (file) {
     return "https://cdn.jsdelivr.net/npm/@mediapipe/hands/" + file;
@@ -226,6 +229,8 @@ function handleHandResults (results) {
   }
 }
 
+// built in mediapipe callback function 
+// referenced from Mediapipe-in-JavaScript Repo
 hands.onResults(handleHandResults);
 
 // camera helper (MediaPipe utility)
@@ -272,6 +277,7 @@ class LetterManager {
       let x = centerX + Math.cos(angle) * radius;
       let y = centerY + Math.sin(angle) * radius;
 
+      // referenced from ctx-style-writing Repo
       ctx.font = WHEEL_FONT;
       ctx.fillStyle = "white";
 
@@ -317,6 +323,7 @@ class LetterManager {
     let shakeY = (Math.random() - 0.5) * jiggleAmount;
 
     // this draws the selected letter in the middle 
+    // referenced from ctx-style-writing Repo
     ctx.font = MAIN_FONT;
     ctx.fillStyle = wheelColor;
 
@@ -377,6 +384,7 @@ function draw() {
     drawHandLandmarks();
   }
 
+  // referenced from ctx-style-writing Repo
   // display the locked letter
   ctx.font = LOCKED_LETTER_FONT;
 
@@ -402,6 +410,7 @@ function draw() {
       let x = 50 + column * 45; 
       let y = 110 + row * 45;
 
+      // referenced from ctx-style-writing Repo
       ctx.fillStyle = pastelColors[i];
       ctx.fillRect(x, y, 40, 40);
 
@@ -433,6 +442,7 @@ function drawHandLandmarks() {
     return;
   }
 
+  // referenced from ctx-style-writing Repo
   // fills red colored dots for the hand landmarks
   ctx.fillStyle = "red";
 
