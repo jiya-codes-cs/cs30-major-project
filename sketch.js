@@ -11,6 +11,7 @@
 // https://codepen.io/mediapipe-preview/pen/gOKBGPN (Hand Landmark Demos using HTML, CSS, and Javascript (specifically webcam))
 // https://github.com/LintangWisesa/MediaPipe-in-JavaScript/tree/master/js (Mediapipe-in-JavaScript Repo)
 // https://github.com/collidingScopes/shape-creator-tutorial/blob/main/main.js (ctx-style-writing Repo)
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_objects (working-with-objects JS MDN Reference)
 
 // Extra for Experts:
 // - help (button) and tutorial (me doing the thing)
@@ -58,14 +59,18 @@ let lastSelectedIndex = -1; // this tracks when the letter actually changes
 // webcam setup (looked up and adapted, not written fully by me)
 // referenced from Mediapipe-in-JavaScript Repo
 // this part allows the browser to ask permission to use the webcam
-navigator.mediaDevices.getUserMedia({ video: true })
-  .then(function (stream) {
+async function setupWebcam() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
     video.srcObject = stream;
-  })
-  .catch(function (error) {
+  } 
+  catch (error) {
     console.log("Webcam error:", error);
-  });
+  }
+}
 
+// calls the function to start it
+setupWebcam();
 
 // this will hold our 20 pastel colors (ordered like this in code for better view)
 let pastelColors = [
@@ -103,6 +108,7 @@ function isFingerOpen(landmarks ,tipIndex, baseIndex) {
 }
 
 // setting options for the hand tracking used objects for better readability of code
+// referenced from working-with-objects JS MDN Reference
 let mySettings = {
   maxNumHands: 1,     // only track one hand 
   modelComplexity: 0, // 0 is fast, 1 is balanced
