@@ -33,6 +33,9 @@ const MENU_X = 50;              // position of the color menu tab
 const MENU_Y = 50;
 const MENU_SIZE = 50;
 const HOVER_TIME_NEEDED = 2000; // 2 seconds in milliseconds
+const MAIN_FONT = "bold 250px Courier";
+const WHEEL_FONT = "bold 30px Courier";
+const LOCKED_LETTER_FONT = "bold 50px Courier";
 
 
 // set to null (the variable exists but it's currrently empty therefore no value) because there are no hand results yet whern the program starts
@@ -62,7 +65,6 @@ navigator.mediaDevices.getUserMedia({ video: true })
   });
 
 
-
 // this will hold our 20 pastel colors (ordered like this in code for better view)
 let pastelColors = [
   "lightpink", "lightsalmon", "lemonchiffon", "lightgreen", "paleturquoise",
@@ -70,6 +72,13 @@ let pastelColors = [
   "peachpuff", "powderblue", "lightcyan", "bisque", "azure",
   "lightgray", "pink", "wheat", "aquamarine", "cornsilk"
 ]; 
+
+const ALPHABET = [
+  "A","B","C","D","E","F","G",
+  "H","I","J","K","L","M","N",
+  "O","P","Q","R","S","T","U",
+  "V","W","X","Y","Z"
+];
 
 // defining the audio file
 const gearSound = new Audio("gear-click.mp3");
@@ -90,16 +99,18 @@ function isFingerOpen(landmarks ,tipIndex, baseIndex) {
   return landmarks[tipIndex].y < landmarks[baseIndex].y;  // checks if finger is open
 }
 
-// setting options for the hand tracking
-hands.setOptions({
+// setting options for the hand tracking used objects for better readability of code
+let mySettings = {
   maxNumHands: 1,     // only track one hand 
   modelComplexity: 0, // 0 is fast, 1 is balanced
   minDetectionConfidence: 0.7,
   minTrackingConfidence: 0.7
-});
+};
+
+hands.setOptions(mySettings);
 
 // this function runs every time MediaPipe finds hands
-hands.onResults(function (results) {
+function handleHandResults (results) {
   handResults = results; // keeps the original line
 
   // checks if hand is on screen 
@@ -130,11 +141,11 @@ hands.onResults(function (results) {
     // Now we assign actions if certain fingers are open
     if (indexOpen && thumbOpen && !middleOpen && !ringOpen && !pinkyOpen) {
       // rotation from A to M (use -= to rotate counter-clockwise)
-      wheelRotation -= rotationSpeed;
+      wheelRotation -= ROTATION_SPEED;
     }
     else if (indexOpen && middleOpen && thumbOpen && !ringOpen && !pinkyOpen) {
       // rotation from N to Z (use += to rotate clock wise)
-      wheelRotation += rotationSpeed;
+      wheelRotation += ROTATION_SPEED;
     }
     
     // pinch fingers logic
@@ -173,7 +184,7 @@ hands.onResults(function (results) {
     const fingerY = landmarks[8].y * canvasHeight;
 
     // checks if finger is hovering over the menu box ( which is at the top left - 50, 50, size 50)
-    if (fingerX > MENU_X && fingerX < (MENU_X + MENU_SIZE) && fingerY > MENU_Y && fingerY < (MENU_Y + MENU_SIZE)) {
+    if (fingerX > MENU_X && fingerX < MENU_X + MENU_SIZE && fingerY > MENU_Y && fingerY < MENU_Y + MENU_SIZE) {
       showColorMenu = true;
     }
 
@@ -181,7 +192,7 @@ hands.onResults(function (results) {
     if (showColorMenu) {
       let foundHover = false;
 
-      // we will loop through our grid of 20 squares
+      // we will write a loop to create a grid of 20 squares
       for (let i = 0; i < pastelColors.length; i++) {
         let column = i % 5;
         let row = Math.floor(i / 5);
@@ -213,7 +224,9 @@ hands.onResults(function (results) {
       } 
     }
   }
-});
+}
+
+hands.onResults(handleHandResults);
 
 // camera helper (MediaPipe utility)
 // this sends webcam frames to the hand detector
@@ -259,7 +272,7 @@ class LetterManager {
       let x = centerX + Math.cos(angle) * radius;
       let y = centerY + Math.sin(angle) * radius;
 
-      ctx.font = "bold 30px Courier";
+      ctx.font = WHEEL_FONT;
       ctx.fillStyle = "white";
 
       // aligned text so it's not "stuck" in the center
@@ -304,7 +317,7 @@ class LetterManager {
     let shakeY = (Math.random() - 0.5) * jiggleAmount;
 
     // this draws the selected letter in the middle 
-    ctx.font = "bold 250px Courier";
+    ctx.font = MAIN_FONT;
     ctx.fillStyle = wheelColor;
 
     // draw it exactly at centerX, centerY while adding shakeX and shakeY
@@ -347,12 +360,7 @@ class App {
 let app = new App();
 
 // added the letters to be covering the circle
-app.setLetters([
-  "A","B","C","D","E","F","G",
-  "H","I","J","K","L","M","N",
-  "O","P","Q","R","S","T","U",
-  "V","W","X","Y","Z"
-]);
+app.setLetters(ALPHABET);
 
 
 // requestAnimationFrame function is used for smooth animation and better refresh rate
@@ -370,7 +378,7 @@ function draw() {
   }
 
   // display the locked letter
-  ctx.font = "bold 50px Courier";
+  ctx.font = LOCKED_LETTER_FONT;
 
   // makes it look different and we know that this letter is the one we have selected
   ctx.fillStyle = "yellow"; 
@@ -445,6 +453,5 @@ function drawHandLandmarks() {
 }
 
 // start drawing once the webcam has loaded
-video.onloadeddata = function () {
-  draw();
-};
+// don't write it as draw() bacause we want it to draw after the video is ready
+video.onloadeddata = draw; 
