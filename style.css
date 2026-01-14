@@ -18,20 +18,22 @@ canvas {
 
 #viewArea {
   position: relative;
-  display: inline-block;
+  width: 1000px;  /* Matches my JS file's canvasWidth */
+  height: 750px; /* Matches my JS file's canvasHeight */
+  margin: 0;     /* centers the project on the screen */
 }
 
 #webcam {
-  width: 1000px;
-  height: 750px;
-  border: 2px solid black;
-  display: block;
+  /* hides the raw feed so I don't see the "double mirror" section */
+  display: none;
 }
 
 #canvas {
   position: absolute;
   top: 0;
   left: 0;
-  border: 2px solid transparent;
+  border: 5px solid transparent;
+  border-radius: 10px;
+  background-color: white;
   /* pointer-events: none; */
 }
