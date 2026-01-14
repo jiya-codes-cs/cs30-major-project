@@ -9,13 +9,13 @@
 - Then divide it into 26 equal parts and display the letters now -> done
 - Generate letter chosen inside the circle -> done
 - Hand-tracking so they can perform actions (like with index + thumb they can move around the circle) -> done
-- Allot hand gestures for certain things -> - HALF done -
+- Allot hand gestures for certain things (index + thumb - rotate anticlockwise) (middle + index + thumb - rotate clockwise) -> done 
 - Use MediaScript as a hand-tracking Library -> done
 - Add rotating sound effects when the user rotates on the letter arc -> done
 
 ## Nice to have lists
 - Add a feature so when the user pinches their (index + thumb) it would lock the letter -> done
-- Add a fetures like rounding edges -> - STILL LEFT -
+- Add a feture that gives digital momentum to the letter when changed (multi sensory feedback) -> done
 - Add a feature that increases/ decreases the size of the letter (set a max and min limit) -> - STILL LEFT -
 - Add the color butons on the right side(light hue so it's not extremely overpowering) -> done
 - Also add a design tab on the side that becomes a drop-down later on -> done
