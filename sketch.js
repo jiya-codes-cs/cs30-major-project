@@ -378,6 +378,10 @@ app.setLetters(ALPHABET);
 
 // requestAnimationFrame function is used for smooth animation and better refresh rate
 function draw() {
+  // clears the canvas before drawing anything
+  ctx.clearRect(0 ,0 , canvasWidth, canvasHeight);
+  ctx.save();
+
   // draw the webcam image onto the canvas
   ctx.drawImage(video, 0, 0, canvasWidth, canvasHeight);
 
