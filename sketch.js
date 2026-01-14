@@ -112,7 +112,7 @@ function isFingerOpen(landmarks ,tipIndex, baseIndex) {
 let mySettings = {
   maxNumHands: 1,     // only track one hand 
   modelComplexity: 0, // 0 is fast, 1 is balanced
-  minDetectionConfidence: 0.7,
+  minDetectionConfidence: 0.9,
   minTrackingConfidence: 0.7
 };
 
