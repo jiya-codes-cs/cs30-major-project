@@ -56,6 +56,13 @@ let jiggleAmount = 0; // stores how much the letter is shaking currently
 // since our A letter is at index 0 we would avoid to start the index from there to play the sound as we only want it to play when it's rotated 
 let lastSelectedIndex = -1; // this tracks when the letter actually changes
 
+// Game Logic
+let targetWord = "CAKE";
+let guessedLetters = ["", "", "", ""]; // stores correct hint like ["C", "", "", "E"]
+let feedbackColor = "yellow";
+let gameMessage = "Pinch to guess the letter!";
+
+
 // webcam setup (looked up and adapted, not written fully by me)
 // referenced from Mediapipe-in-JavaScript Repo
 // this part allows the browser to ask permission to use the webcam
@@ -160,29 +167,50 @@ function handleHandResults (results) {
     // pinch fingers logic
     // here, if the distance is less than 0.05 then it means that the fingers are touching "pinching"
     if (distance < PINCH_THRESHOLD) {
-      // first we will find which letter is at the top
-      let total = 26; // total letters
-      let angleStep = Math.PI * 2 / total;
-
-      // we take the rotation and then divide by the gap size
-      // this tells us how many spaces the wheel has turned
-      // Math.round turns this into a whole number (like 4 intead of 4.29)
-      // % total makes sure the number stays between 0 - 25 (cause remember we start from 0 not 1 in comp sci)
-      let index = Math.round (-wheelRotation / angleStep) % total;
-
-      // here, if you spin the wheel backwards we will end up with a negative number
-      // since an array can't have a negative number we add that total to (26) to fix it
-      // for example: -1 becomes letter 25 which is alphabet Z
-      if (index < 0) {
-        index += total;
+      if (!isPinching) {
+        isPinching = true;
+        // first we will find which letter is at the top
+        let total = 26; // total letters
+        let angleStep = Math.PI * 2 / total;
+  
+        // we take the rotation and then divide by the gap size
+        // this tells us how many spaces the wheel has turned
+        // Math.round turns this into a whole number (like 4 intead of 4.29)
+        // % total makes sure the number stays between 0 - 25 (cause remember we start from 0 not 1 in comp sci)
+        let index = Math.round (-wheelRotation / angleStep) % total;
+  
+        // here, if you spin the wheel backwards we will end up with a negative number
+        // since an array can't have a negative number we add that total to (26) to fix it
+        // for example: -1 becomes letter 25 which is alphabet Z
+        if (index < 0) {
+          index += total;
+        }
+        
+        // now, we look at that letter in our list
+        lockedLetter = app.letterManager.letters[index];
+  
+        console.log("Locked Letter: " + lockedLetter);
+  
+        if (targetWord.includes(lockedLetter)) {
+          feedbackColor = "lime"; // turns green for correct
+          // fills the blanks in our guessedLetters Array 
+          for (let i = 0; i < targetWord.length; i++) {
+            if (targetWord[i] === lockedLetter) {
+              guessedLetters[i] = lockedLetter;
+            }
+          }
+          gameMessage = "Correct!"; // displays message when we are correct
+        }
+        else {
+          feedbackColor = "red"; // turns red for wrong letter guessed
+          gameMessage = "Try again...";
+        }
       }
-      
-      // now, we look at that letter in our list
-      lockedLetter = app.letterManager.letters[index];
-
-      console.log("Locked Letter: " + lockedLetter);
     }
     else {
+
+      isPinching = false; // resets when you open your fingers
+
       // this cleans the rotation so it's not too huge (mod function keeps the values between 0 - 360)
       // prevents the code from lagging or breaking after you've spun it
       wheelRotation = wheelRotation % (Math.PI * 2);
