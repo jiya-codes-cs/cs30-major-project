@@ -165,6 +165,7 @@ function handleHandResults (results) {
     }
     
     // pinch fingers logic
+
     // here, if the distance is less than 0.05 then it means that the fingers are touching "pinching"
     if (distance < PINCH_THRESHOLD) {
       if (!isPinching) {
@@ -188,7 +189,8 @@ function handleHandResults (results) {
         
         // now, we look at that letter in our list
         lockedLetter = app.letterManager.letters[index];
-  
+        
+        // helped me verify if the letter was chosen or not (Check system basically)
         console.log("Locked Letter: " + lockedLetter);
   
         if (targetWord.includes(lockedLetter)) {
@@ -313,6 +315,7 @@ class LetterManager {
 
       // referenced from ctx-style-writing Repo
       ctx.font = WHEEL_FONT;
+      
       // FUN FACT: default fillStyle is black
       ctx.fillStyle = "white"; // we changed the color to white here
 
