@@ -469,6 +469,36 @@ function draw() {
     }
   }
 
+  ctx.fontStyle = "white";
+  ctx.font = "bold 40px Courier";
+  ctx.textAlign = "center";
+
+  // draws 4 slots _ _ _ _
+  for (let i = 0; i < 4; i++) {
+    let xLocation = 200 + i * 60;
+
+    // if the letter isn't guessed we just show an underscore
+    let displayCharacter;
+
+    if (guessedLetters[i] === "") {
+      // if the slot is empty, show an underscore
+      displayCharacter = "_";
+    }
+    else {
+      displayCharacter = guessedLetters[i]; 
+    }
+
+    ctx.fillStyle = "white";
+    ctx.fillText(displayCharacter, xLocation, 200);
+  }
+
+  // we make the clue box
+  ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
+  ctx.fillRect(150, 280, 260, 120);
+  ctx.fillStyle = "white";
+  ctx.font = "20px Courier";
+  ctx.fillText("CLUE: Sweet Dessert", 280, 340);
+
   // keeps looping before the next screen refresh
   requestAnimationFrame(draw);
 }
