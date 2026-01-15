@@ -110,7 +110,7 @@ const hands = new Hands({
 
 // helper function to check if the finger is extended or not
 function isFingerOpen(landmarks ,tipIndex, baseIndex) {
-  // on computer small y means higher on the screen
+  // on computer the smaller the y value the higher it is on the screen
   return landmarks[tipIndex].y < landmarks[baseIndex].y;  // checks if finger is open
 }
 
@@ -138,8 +138,8 @@ function handleHandResults (results) {
     // added a small buffer to make the detection less vague
     const indexOpen = landmarks[8].y < landmarks[6].y - ROTATION_SPEED;      // index finger
     const middleOpen = landmarks[12].y < landmarks[10].y - ROTATION_SPEED;   // middle finger
-    const ringOpen = landmarks[16].y < landmarks[9].y;;            // ring finger
-    const pinkyOpen = landmarks[20].y < landmarks[9].y;;           // pinky finger
+    const ringOpen = landmarks[16].y < landmarks[9].y;;                      // ring finger
+    const pinkyOpen = landmarks[20].y < landmarks[9].y;;                     // pinky finger
 
     // thumb is special in this case 
     // we will do a horizontal check to confirm that while index and middle are open it is open too
@@ -313,7 +313,8 @@ class LetterManager {
 
       // referenced from ctx-style-writing Repo
       ctx.font = WHEEL_FONT;
-      ctx.fillStyle = "white";
+      // FUN FACT: default fillStyle is black
+      ctx.fillStyle = "white"; // we changed the color to white here
 
       // aligned text so it's not "stuck" in the center
       ctx.textAlign = "center";
@@ -459,6 +460,7 @@ function draw() {
         ctx.strokeRect(x, y, 40, 40);
 
         // show a loading bar for the 2 second wait
+        // Date.now() is a special JS function that we can use to get the currrent time in milliseconds and we can subtract that from the start
         let progress = (Date.now() - hoverStartTime) / 2000;
 
         // alpha value addded at the end for a bit of transparency
@@ -475,7 +477,7 @@ function draw() {
 
   // draws 4 slots _ _ _ _
   for (let i = 0; i < 4; i++) {
-    let xLocation = 200 + i * 60;
+    let xLocation = 190 + i * 60;
 
     // if the letter isn't guessed we just show an underscore
     let displayCharacter;
@@ -489,15 +491,15 @@ function draw() {
     }
 
     ctx.fillStyle = "white";
-    ctx.fillText(displayCharacter, xLocation, 200);
+    ctx.fillText(displayCharacter, xLocation, 480);
   }
 
   // we make the clue box
   ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
-  ctx.fillRect(150, 280, 260, 120);
+  ctx.fillRect(150, 520, 260, 120);
   ctx.fillStyle = "white";
   ctx.font = "20px Courier";
-  ctx.fillText("CLUE: Sweet Dessert", 280, 340);
+  ctx.fillText("CLUE: Sweet Dessert", 280, 580);
 
   // keeps looping before the next screen refresh
   requestAnimationFrame(draw);
