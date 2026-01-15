@@ -62,6 +62,9 @@ let guessedLetters = ["", "", "", ""]; // stores correct hint like ["C", "", "",
 let feedbackColor = "yellow";
 let gameMessage = "Pinch to guess the letter!";
 
+// bad guesses 
+let wrongLetters = []; // this will store things like ["X", "Y", "Z"]
+
 
 // webcam setup (looked up and adapted, not written fully by me)
 // referenced from Mediapipe-in-JavaScript Repo
@@ -158,10 +161,26 @@ function handleHandResults (results) {
     if (indexOpen && thumbOpen && !middleOpen && !ringOpen && !pinkyOpen) {
       // rotation from A to M (use -= to rotate counter-clockwise)
       wheelRotation -= ROTATION_SPEED;
+
+      let currentIndex = Math.round(-wheelRotation/ (Math.PI * 2 / 26)) % 26;
+      if (currentIndex < 0) {
+        currentIndex += 26;
+      }
+      if (wrongLetters.includes(ALPHABET[currentIndex])) {
+        wheelRotation -= 0.1;
+      }
     }
     else if (indexOpen && middleOpen && thumbOpen && !ringOpen && !pinkyOpen) {
       // rotation from N to Z (use += to rotate clock wise)
       wheelRotation += ROTATION_SPEED;
+
+      let currentIndex = Math.round(-wheelRotation/ (Math.PI * 2 / 26)) % 26;
+      if (currentIndex < 0) {
+        currentIndex += 26;
+      }
+      if (wrongLetters.includes(ALPHABET[currentIndex])) {
+        wheelRotation += 0.1; // pushes past that letter
+      }
     }
     
     // pinch fingers logic
@@ -206,6 +225,11 @@ function handleHandResults (results) {
         else {
           feedbackColor = "red"; // turns red for wrong letter guessed
           gameMessage = "Try again...";
+
+          //if the letter isn't already in our wrong list we add it 
+          if (!wrongLetters.includes(lockedLetter)) {
+            wrongLetters.push(lockedLetter);
+          }
         }
       }
     }
@@ -317,7 +341,13 @@ class LetterManager {
       ctx.font = WHEEL_FONT;
       
       // FUN FACT: default fillStyle is black
-      ctx.fillStyle = "white"; // we changed the color to white here
+      if (wrongLetters.includes(this.letters[i])) {
+        ctx.fillStyle = "red"; //Makes the letter red if it's wrong
+      }
+
+      else {
+        ctx.fillStyle = "white"; // stays white otherwise (letter still available)
+      }
 
       // aligned text so it's not "stuck" in the center
       ctx.textAlign = "center";
