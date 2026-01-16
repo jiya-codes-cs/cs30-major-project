@@ -14,7 +14,7 @@
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_objects (working-with-objects JS MDN Reference)
 
 // Extra for Experts:
-// - help (button) and tutorial (me doing the thing)
+// - help (button) and tutorial (me showing a demo)
 // - Implement a multi sensory feedback system by creating a vibration effect when a new letter is selected (Haptic Jiggle Algorithm)
 
 // grabs HTML elements using their id 
