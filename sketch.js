@@ -17,6 +17,7 @@
 // - help (button) and tutorial (me showing a demo)
 // - Implement a multi sensory feedback system by creating a vibration effect when a new letter is selected (Haptic Jiggle Algorithm)
 
+
 // grabs HTML elements using their id 
 // grabs elements by using this function which is used to call an already present HTML element
 const video = document.getElementById("webcam");
