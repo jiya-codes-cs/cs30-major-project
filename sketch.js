@@ -71,13 +71,21 @@ let lastSelectedIndex = -1; // this tracks when the letter actually changes
 let isPinching = false;
 
 // Game Logic
-let targetWord = "CAKE";
-let guessedLetters = ["", "", "", ""]; // stores correct hint like ["C", "", "", "E"]
-let feedbackColor = "yellow";
-let gameMessage = "Pinch to guess the letter!";
+
+// used objects to make it easier for me to keep track of everything
+let levels = [
+  { word: "CAKE", clue: "Sweet Dessert", category: "FOOD" },
+  { word: "BALL", clue: "Used in many sports", category: "SPORTS" },
+  { word: "GOLF", clue: "Club & a tiny ball", category: "SPORTS" },
+  { word: "PIZZA", clue: "Cheesy Italian slice", category: "FOOD" }
+];
+
+let currentLevelIndex = 0;
+let targetWord = levels[currentLevelIndex].word;
+let guessedLetters = []; // we will fill this automatically
 
 // bad guesses 
-let wrongLetters = []; // this will store things like ["X", "Y", "Z"]
+let wrongLetters = []; // this will store bad guessed letters  
 
 
 // webcam setup (looked up and adapted, not written fully by me)
@@ -136,6 +144,20 @@ const hands = new Hands({
     return "https://cdn.jsdelivr.net/npm/@mediapipe/hands/" + file;
   }
 });
+
+// this function stores sets up the game board for current word
+function setupLevel() {
+  targetWord = levels[currentLevelIndex].word;
+  wrongLetters = []; // resets wrong guesses
+  guessedLetters = []; // resets the blanks
+
+  // fills the guessedLetters array with empty strings based on word length
+  for (let i = 0; i < targetWord.length; i++) {
+    guessedLetters.push("");
+  }
+}
+
+setupLevel();
 
 // helper function to check if the finger is extended or not
 function isFingerOpen(landmarks ,tipIndex, baseIndex) {
@@ -240,14 +262,24 @@ function handleHandResults (results) {
   
         if (targetWord.includes(lockedLetter)) {
           feedbackColor = "lime"; // turns green for correct
-          // fills the blanks in our guessedLetters Array 
+          gameMessage = "Correct!"; // displays message when we are correct
+          
+          // this loop shows the letters
           for (let i = 0; i < targetWord.length; i++) {
             if (targetWord[i] === lockedLetter) {
-              guessedLetters[i] = lockedLetter;
+              guessedLetters[i] = lockedLetter; // This puts the letter in the slot!
             }
           }
-          gameMessage = "Correct!"; // displays message when we are correct
+
+          // if no more underscores are left the word is done
+          if (!guessedLetters.includes("")) {
+            gameMessage = "WORD COMPLETE!";
+    
+            // This tells the computer in 2 second run the goToNextLevel function
+            setTimeout(goToNextLevel, 2000); 
+          }
         }
+
         else {
           feedbackColor = "red"; // turns red for wrong letter guessed
           gameMessage = "Try again...";
@@ -479,6 +511,17 @@ let app = new App();
 // added the letters to be covering the circle
 app.setLetters(ALPHABET);
 
+// this function makes us go to the next level (helper function)
+function goToNextLevel() {
+  currentLevelIndex = currentLevelIndex + 1;
+
+  if (currentLevelIndex >= levels.length) {
+    currentLevelIndex = 0; 
+  }
+
+  setupLevel();
+  gameMessage = "Category: " + levels[currentLevelIndex].category;
+}
 
 // requestAnimationFrame function is used for smooth animation and better refresh rate
 function draw() {
@@ -585,31 +628,28 @@ function draw() {
     ctx.font = "bold 40px Courier";
     ctx.textAlign = "center";
   
-    // draws 4 slots _ _ _ _
-    for (let i = 0; i < 4; i++) {
+    // used targetWord.length so it works for 4, 5, or 6 letter words
+    for (let i = 0; i < targetWord.length; i++) {
       let xLocation = 190 + i * 60;
   
-      // if the letter isn't guessed we just show an underscore
-      let displayCharacter;
-  
-      if (guessedLetters[i] === "") {
-        // if the slot is empty, show an underscore
+      let displayCharacter = guessedLetters[i];
+      if (displayCharacter === "") {
         displayCharacter = "_";
       }
-      else {
-        displayCharacter = guessedLetters[i]; 
-      }
-  
+
+      ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
+      ctx.fillRect(40, 520, 480, 120);
+      ctx.fillStyle = "white";
+
+      // CHANGE THIS LINE: 20px is the size. Try 15px or 12px.
+      ctx.font = "bold  30px Courier";
       ctx.fillStyle = "white";
       ctx.fillText(displayCharacter, xLocation, 480);
     }
-  
-    // we make the clue box
-    ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
-    ctx.fillRect(150, 520, 260, 120);
-    ctx.fillStyle = "white";
-    ctx.font = "20px Courier";
-    ctx.fillText("CLUE: Sweet Dessert", 280, 580);
+
+    // update the clue box text to be dynamic too!
+    ctx.fillText("CLUE: " + levels[currentLevelIndex].clue, 280, 580);
+
   }
 
   ctx.restore();
