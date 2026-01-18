@@ -16,7 +16,8 @@
 ## Nice to have lists
 - Add a feature so when the user pinches their (index + thumb) it would lock the letter -> done
 - Add a feture that gives digital momentum to the letter when changed (multi sensory feedback) -> done
-- Add a feature that increases/ decreases the size of the letter (set a max and min limit) -> - STILL LEFT -
-- Add the color butons on the right side(light hue so it's not extremely overpowering) -> done
-- Also add a design tab on the side that becomes a drop-down later on -> done
+- Create a game (basically give the project a purpose) for user interaction -> - In Progress -
+- Skip the wrong letters and display them in red -> done
+- Add a help button so the user can know the instructions on how to play the game -> done
+- Add the color buttons on the right side(light hue so it's not extremely overpowering) -> done
 - Add multiple colors as option so all the RGB values -> done
