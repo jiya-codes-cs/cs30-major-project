@@ -1,7 +1,7 @@
 # Beta-Testing
 
 ## Non-CS Person (The "Users" Perspective)
-- Add Instructions on how to rotate the wheel.
+- Add Instructions on how to rotate the wheel. (✅)
 - Really liked the way the letters turned red if they are wrong (makes it easier for the user to not forget). (✅)
 - Add more levels than just cake so we can keep playing the game. 
 - Make the color box bigger almost missed it because the webacm background is preety busy. (✅)

@@ -14,8 +14,20 @@
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_objects (working-with-objects JS MDN Reference)
 
 // Extra for Experts:
-// - help (button) and tutorial (me showing a demo)
-// - Implement a multi sensory feedback system by creating a vibration effect when a new letter is selected (Haptic Jiggle Algorithm)
+// - Implemented a non-blocking hover to select system using 'Date.now()' 
+//   timestamps. This allows the user to interact with UI elements (Help 
+//   and Color Menu) without physical clicking, maintaining a touchless 
+//   UX while preventing accidental triggers.
+
+// - Created a multi sensory sensory feedback system using Exponential Decay math.
+//   When a letter change is detected, 'jiggleAmount' is set to a peak 
+//   value and multiplied by a decay constant (0.8) each frame therefore 
+//   simulating a physical vibration or "click" feel visually.
+
+// - Built a conditional rendering system that toggles between a 
+//   gameplay state and an instructional popup (showHelp), including 
+//   automated reset logic if the hand leaves a button's 'hitbox' area.
+
 
 // grabs HTML elements using their id 
 // grabs elements by using this function which is used to call an already present HTML element
@@ -55,6 +67,8 @@ let jiggleAmount = 0; // stores how much the letter is shaking currently
 // we chose -1 as the starting point because an array can never be a negative index 
 // since our A letter is at index 0 we would avoid to start the index from there to play the sound as we only want it to play when it's rotated 
 let lastSelectedIndex = -1; // this tracks when the letter actually changes
+
+let isPinching = false;
 
 // Game Logic
 let targetWord = "CAKE";
@@ -100,6 +114,18 @@ const ALPHABET = [
 // defining the audio file
 const gearSound = new Audio("gear-click.mp3");
 gearSound.volume = 0.5; 
+
+// Help Button Position
+let HELP_X = 125;
+let HELP_Y = 50; // placed below the color button
+let HELP_SIZE = 50;
+
+// grabs images from HTML 
+const helpBtnImg = document.getElementById("helpImg");
+const backBtnImg = document.getElementById("backImg");
+
+let showHelp = false; // the switch for the instruction screen
+let helpHoverStart = 0;
 
 // MediaPipe Hands setup
 // this code loads the AI model that detects hands
@@ -246,6 +272,22 @@ function handleHandResults (results) {
     const fingerX = landmarks[8].x * canvasWidth;
     const fingerY = landmarks[8].y * canvasHeight;
 
+    // help button logic
+    // if my hand is inside that button then it open the help/ instructions tab for me 
+    if (fingerX > HELP_X && fingerX < HELP_X + HELP_SIZE && fingerY > HELP_Y && fingerY < HELP_Y + HELP_SIZE) {  
+      if (helpHoverStart === 0) {
+        helpHoverStart = Date.now();
+      }
+
+      // checks if it has been 2 seconds (2000 ms) for our hand to be there
+      if (Date.now() - helpHoverStart > HOVER_TIME_NEEDED) {
+        showHelp = !showHelp; 
+        helpHoverStart = 0; 
+      }
+    } 
+    else {
+      helpHoverStart = 0;
+    }
     // checks if finger is hovering over the menu box ( which is at the top left - 50, 50, size 50)
     if (fingerX > MENU_X && fingerX < MENU_X + MENU_SIZE && fingerY > MENU_Y && fingerY < MENU_Y + MENU_SIZE) {
       showColorMenu = true;
@@ -447,92 +489,130 @@ function draw() {
   // draw the webcam image onto the canvas
   ctx.drawImage(video, 0, 0, canvasWidth, canvasHeight);
 
-  // draw alphabet wheel
-  app.drawEverything();
-  
-  // draw only if the landmarks exist
-  if (handResults && handResults.multiHandLandmarks) {
-    // draw red dots where the hand landmarks are
-    drawHandLandmarks();
+  if (showHelp) {
+    // instruction screen 
+    ctx.fillStyle = "rgba(0, 0, 0, 0.8)"; // Darken the background
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+    // draws your dialogue Box
+    ctx.fillStyle = "white";
+    ctx.fillRect(130, 130, 760, 400); 
+
+    // the written instructions inside the dialogue box
+    ctx.fillStyle = "black";
+    ctx.font = "20px Courier";
+    ctx.textAlign = "center";
+    ctx.fillText("HOW TO PLAY", 500, 200);
+    ctx.fillText("1. Index Finger UP = Spin Left", 400, 250);
+    ctx.fillText("2. Index, Middle Fingers UP and Thumb Open = Spin Right", 547, 300);
+    ctx.fillText("3. Pinch Thumb & Index = Select Letter", 445, 350);
+    ctx.fillText("4. Hover on the Arrow = Exit Help", 415, 400);
+
+    // draws the "BACK" image
+    ctx.drawImage(backBtnImg, HELP_X, HELP_Y, HELP_SIZE, HELP_SIZE);
+
   }
 
-  // referenced from ctx-style-writing Repo
-  // display the locked letter
-  ctx.font = LOCKED_LETTER_FONT;
+  else {
 
-  // makes it look different and we know that this letter is the one we have selected
-  ctx.fillStyle = "yellow"; 
-  ctx.textAlign = "left";
- 
-  // draws the text on the top left corner
-  ctx.fillText("Selected: " + lockedLetter, 600, 650);
+    // draw alphabet wheel
+    app.drawEverything();
+    
+    // draw only if the landmarks exist
+    if (handResults && handResults.multiHandLandmarks) {
+      // draw red dots where the hand landmarks are
+      drawHandLandmarks();
+    }
+  
+    // referenced from ctx-style-writing Repo
+    // display the locked letter
+    ctx.font = LOCKED_LETTER_FONT;
+  
+    // makes it look different and we know that this letter is the one we have selected
+    ctx.fillStyle = "yellow"; 
+    ctx.textAlign = "left";
+   
+    // draws the text on the top left corner
+    ctx.fillText("Selected: " + lockedLetter, 600, 650);
+  
+    //displays the main button to open the menu
+    ctx.fillStyle = "white";
+    ctx.fillRect(MENU_X, MENU_Y, MENU_SIZE, MENU_SIZE);
+    ctx.font = "15px Courier";
+    ctx.fillStyle = "black";
+    ctx.fillText("COLOR", MENU_X + 2, MENU_Y + 30);
 
-  //displays the main button to open the menu
-  ctx.fillStyle = "white";
-  ctx.fillRect(MENU_X, MENU_Y, MENU_SIZE, MENU_SIZE);
-  ctx.font = "15px Courier";
-  ctx.fillStyle = "black";
-  ctx.fillText("COLOR", MENU_X + 2, MENU_Y + 30);
+    ctx.drawImage(helpBtnImg, HELP_X, HELP_Y, HELP_SIZE, HELP_SIZE);
 
-  if (showColorMenu) {
-    // draws 20 tiny squares
-    for (let i = 0; i < pastelColors.length; i++) {
-      let column = i % 5;
-      let row = Math.floor(i/ 5);
-      let x = 50 + column * 45; 
-      let y = 110 + row * 45;
-
-      // referenced from ctx-style-writing Repo
-      ctx.fillStyle = pastelColors[i];
-      ctx.fillRect(x, y, 40, 40);
-
-      // draws a white border if we're hovering
-      if (hoveringIndex === i) {
-        ctx.strokeStyle = "white";
-        ctx.lineWidth = 3;
-        ctx.strokeRect(x, y, 40, 40);
-
-        // show a loading bar for the 2 second wait
-        // Date.now() is a special JS function that we can use to get the currrent time in milliseconds and we can subtract that from the start
-        let progress = (Date.now() - hoverStartTime) / 2000;
-
-        // alpha value addded at the end for a bit of transparency
-        ctx.fillStyle = "rgba(255, 255, 255, 0.5)"; 
-        ctx.fillRect(x, y + 35, 40 * progress, 5);
-
+    // checks if my hand has been in the help box for more than 2 seconds
+    if (helpHoverStart > 0) {
+      let progress = (Date.now() - helpHoverStart) / 2000;
+      ctx.fillStyle = "rgba(0, 255, 0, 0.5)"; 
+      ctx.fillRect(HELP_X, HELP_Y + HELP_SIZE - 5, HELP_SIZE * progress, 5);
+    }
+  
+    if (showColorMenu) {
+      // draws 20 tiny squares
+      for (let i = 0; i < pastelColors.length; i++) {
+        let column = i % 5;
+        let row = Math.floor(i/ 5);
+        let x = 50 + column * 45; 
+        let y = 110 + row * 45;
+  
+        // referenced from ctx-style-writing Repo
+        ctx.fillStyle = pastelColors[i];
+        ctx.fillRect(x, y, 40, 40);
+  
+        // draws a white border if we're hovering
+        if (hoveringIndex === i) {
+          ctx.strokeStyle = "white";
+          ctx.lineWidth = 3;
+          ctx.strokeRect(x, y, 40, 40);
+  
+          // show a loading bar for the 2 second wait
+          // Date.now() is a special JS function that we can use to get the currrent time in milliseconds and we can subtract that from the start
+          let progress = (Date.now() - hoverStartTime) / 2000;
+  
+          // alpha value addded at the end for a bit of transparency
+          ctx.fillStyle = "rgba(255, 255, 255, 0.5)"; 
+          ctx.fillRect(x, y + 35, 40 * progress, 5);
+  
+        }
       }
     }
-  }
-
-  ctx.fontStyle = "white";
-  ctx.font = "bold 40px Courier";
-  ctx.textAlign = "center";
-
-  // draws 4 slots _ _ _ _
-  for (let i = 0; i < 4; i++) {
-    let xLocation = 190 + i * 60;
-
-    // if the letter isn't guessed we just show an underscore
-    let displayCharacter;
-
-    if (guessedLetters[i] === "") {
-      // if the slot is empty, show an underscore
-      displayCharacter = "_";
+  
+    ctx.fontStyle = "white";
+    ctx.font = "bold 40px Courier";
+    ctx.textAlign = "center";
+  
+    // draws 4 slots _ _ _ _
+    for (let i = 0; i < 4; i++) {
+      let xLocation = 190 + i * 60;
+  
+      // if the letter isn't guessed we just show an underscore
+      let displayCharacter;
+  
+      if (guessedLetters[i] === "") {
+        // if the slot is empty, show an underscore
+        displayCharacter = "_";
+      }
+      else {
+        displayCharacter = guessedLetters[i]; 
+      }
+  
+      ctx.fillStyle = "white";
+      ctx.fillText(displayCharacter, xLocation, 480);
     }
-    else {
-      displayCharacter = guessedLetters[i]; 
-    }
-
+  
+    // we make the clue box
+    ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
+    ctx.fillRect(150, 520, 260, 120);
     ctx.fillStyle = "white";
-    ctx.fillText(displayCharacter, xLocation, 480);
+    ctx.font = "20px Courier";
+    ctx.fillText("CLUE: Sweet Dessert", 280, 580);
   }
 
-  // we make the clue box
-  ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
-  ctx.fillRect(150, 520, 260, 120);
-  ctx.fillStyle = "white";
-  ctx.font = "20px Courier";
-  ctx.fillText("CLUE: Sweet Dessert", 280, 580);
+  ctx.restore();
 
   // keeps looping before the next screen refresh
   requestAnimationFrame(draw);
