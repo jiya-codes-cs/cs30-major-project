@@ -8,6 +8,6 @@
 
 # CS Person (The "Dev" Perspective)
 - The colors option that you added was cool but I wish you could change the text at the bottom of the circle with that too.
-- Instad of hard-coding the word cake as your answer you should move words into an array and it randomly picks a word.
+- Instead of hard-coding the word cake as your answer you should move words into an array and it randomly picks a word.
 - The jiggle feature is preety cool it gives us a 3D effect but increase it's duration a bit. (✅) 
-- You can add a start screen that shows what the game is for better overview of the project.
+- Can you do something about the lagging as at first the game is fine then it starts to slow down. (✅)
