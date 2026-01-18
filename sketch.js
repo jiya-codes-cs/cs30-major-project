@@ -529,7 +529,7 @@ function draw() {
     ctx.font = LOCKED_LETTER_FONT;
   
     // makes it look different and we know that this letter is the one we have selected
-    ctx.fillStyle = "yellow"; 
+    ctx.fillStyle = wheelColor; 
     ctx.textAlign = "left";
    
     // draws the text on the top left corner
