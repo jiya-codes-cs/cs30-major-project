@@ -184,7 +184,7 @@ function handleHandResults (results) {
   if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
     const landmarks = results.multiHandLandmarks[0];
 
-    // identifies all fingers state 
+    // identifies all fingers state (look at hand-landmarks.png for more info)
     // we check the (tip coordinate) for accurate detection
     // added a small buffer to make the detection less vague
     const indexOpen = landmarks[8].y < landmarks[6].y - ROTATION_SPEED;      // index finger
@@ -630,7 +630,7 @@ function draw() {
   
     // used targetWord.length so it works for 4, 5, or 6 letter words
     for (let i = 0; i < targetWord.length; i++) {
-      // 
+      // the *60 deals with the spacing between each dash (the bigger the number the greater the distance between the dashes)
       let xLocation = 190 + i * 60;
   
       let displayCharacter = guessedLetters[i];
@@ -638,11 +638,11 @@ function draw() {
         displayCharacter = "_";
       }
 
+      // fills the background with a darker transparent blackish color so the main focus is on the help menu information
       ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
       ctx.fillRect(40, 520, 480, 120);
       ctx.fillStyle = "white";
 
-      // CHANGE THIS LINE: 20px is the size. Try 15px or 12px.
       ctx.font = "bold  30px Courier";
       ctx.fillStyle = "white";
       ctx.fillText(displayCharacter, xLocation, 480);

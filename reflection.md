@@ -12,14 +12,14 @@
 
 - Interactive Alphabet Wheel: The wheel rotates based on specific finger states (index/thumb vs. index/middle/thumb) and allows for letter selection.
 
-- Word Game Logic: I implemented the "CAKE" word challenge wher the system locks if a pinched letter is correct or wrong.
+- Word Game Logic: I implemented the "CAKE" word challenge where the system locks if a pinched letter is correct or wrong.
 
 - Color Picker: The drop-down menu for changing the wheel's letter color works using a 2 second hover setection mechanism. 
 
 ## What was the hardest part of the project?
-- Pinch Detection Math: Using Pythagorean theorem to calculate the distance between the thumb and the index finger tips was tricky and I did needed a little halp for that part from AI to help me give ideas on how to approach that idea.
+- Pinch Detection Math: Using Pythagorean theorem to calculate the distance between the thumb and the index finger tips was tricky and I did need a little help for that part from AI on how to approach that idea.
 
-- Wheel Indexing: Mapping the WheelRotation (which is in Raadians) to a specific index in 26 letter alphabet array especially handeling the negative nubers when spinning backwards.
+- Wheel Indexing: Mapping the WheelRotation (which is in Radians) to a specific index in 26 letter alphabet array especially handeling the negative nubers when spinning backwards.
 
 - Hand Detection Sensitivity Settings: Finding the balance in minDetectionConfidence function so the hand doesn't flicker but still responds quickly responds to fast movements.
 
