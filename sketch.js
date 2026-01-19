@@ -630,6 +630,7 @@ function draw() {
   
     // used targetWord.length so it works for 4, 5, or 6 letter words
     for (let i = 0; i < targetWord.length; i++) {
+      // 
       let xLocation = 190 + i * 60;
   
       let displayCharacter = guessedLetters[i];
