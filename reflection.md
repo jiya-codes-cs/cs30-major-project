@@ -1,7 +1,7 @@
 # Reflection for CompSci 30 project
 
 ## What advice would you give to yourself if you were to start this project like this again?
-- Start by picking the right Machine Learning Model (choices - tenserflow(hard), ml5(easy but glitchy), mediapipe(medium difficulty and best)).\
+- Start by picking the right Machine Learning Model (choices - tenserflow(hard), ml5(easy but glitchy), mediapipe(medium difficulty and best)).
 
 - I would suggest myself to first of all familiarize myself with the mediapipe syntax and watch videos on how people have approched this project via.
 
